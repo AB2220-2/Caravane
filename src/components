@@ -1,0 +1,136 @@
+<template>
+  <button
+    :type="type"
+    :disabled="disabled"
+    class="base-button"
+    :class="buttonClasses"
+    @click="handleClick"
+  >
+    <slot></slot> <!-- Permet de passer du texte ou des icônes à l'intérieur du bouton -->
+  </button>
+</template>
+
+<script setup>
+import { computed } from 'vue';
+
+// Définition des propriétés (props) que le composant parent peut passer
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'button', // button, submit, reset
+    validator: (value) => ['button', 'submit', 'reset'].includes(value),
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  variant: {
+    type: String,
+    default: 'primary', // exemple: primary, secondary, danger
+    validator: (value) => ['primary', 'secondary', 'danger', 'link'].includes(value),
+  },
+  // Ajoutez d'autres props si nécessaire (ex: size, isLoading...)
+});
+
+// Définition des événements que le composant peut émettre vers le parent
+const emit = defineEmits(['click']);
+
+// Logique pour gérer le clic et émettre l'événement
+function handleClick(event) {
+  if (!props.disabled) {
+    emit('click', event); // Émet l'événement 'click' vers le composant parent
+  }
+}
+
+// Classes CSS calculées basées sur les props
+const buttonClasses = computed(() => {
+  return [
+    `base-button--${props.variant}`, // Classe pour le style (ex: base-button--primary)
+    { 'base-button--disabled': props.disabled }, // Classe si désactivé
+  ];
+});
+</script>
+
+<style scoped>
+/* Styles de base pour le bouton (à personnaliser grandement) */
+.base-button {
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit; /* Hérite la police du contexte */
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Styles par variante */
+.base-button--primary {
+  background-color: #3498db; /* Bleu exemple */
+  color: white;
+  border-color: #2980b9;
+}
+.base-button--primary:hover {
+  background-color: #2980b9;
+}
+
+.base-button--secondary {
+  background-color: #ecf0f1; /* Gris clair exemple */
+  color: #34495e;
+  border-color: #bdc3c7;
+}
+.base-button--secondary:hover {
+  background-color: #dadedf;
+  border-color: #a7abae;
+}
+
+.base-button--danger {
+  background-color: #e74c3c; /* Rouge exemple */
+  color: white;
+  border-color: #c0392b;
+}
+.base-button--danger:hover {
+  background-color: #c0392b;
+}
+
+.base-button--link {
+  background-color: transparent;
+  border: none;
+  color: #3498db;
+  text-decoration: underline;
+  padding: 0; /* Ajuster si nécessaire */
+}
+.base-button--link:hover {
+  color: #2980b9;
+}
+
+
+/* Style pour l'état désactivé */
+.base-button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  /* Potentiellement écraser les couleurs de :hover */
+}
+.base-button--primary.base-button--disabled:hover {
+    background-color: #3498db;
+}
+.base-button--secondary.base-button--disabled:hover {
+    background-color: #ecf0f1;
+    border-color: #bdc3c7;
+}
+.base-button--danger.base-button--disabled:hover {
+    background-color: #e74c3c;
+}
+.base-button--link.base-button--disabled:hover {
+    color: #3498db;
+}
+
+/* Focus styles pour l'accessibilité */
+.base-button:focus,
+.base-button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+</style>
